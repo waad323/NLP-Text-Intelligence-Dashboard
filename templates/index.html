@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NLP Text Intelligence Studio - AI Analytics Dashboard</title>
+    <meta name="description" content="Production-ready NLP Text Intelligence Dashboard featuring extractive summarization, TF-IDF keyphrase extraction, sentiment analysis, BBC news categorization, and PDF report export.">
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <div class="app-layout">
+        <!-- Top Navigation Bar -->
+        <header class="app-header">
+            <div class="header-brand">
+                <div class="brand-logo">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"></path>
+                        <path d="M6 6h10"></path>
+                        <path d="M6 10h10"></path>
+                        <path d="M6 14h6"></path>
+                    </svg>
+                </div>
+                <div class="brand-text">
+                    <h1>NLP Text Intelligence Studio</h1>
+                    <span class="brand-badge">Production v2.0</span>
+                </div>
+            </div>
+            <div class="header-actions">
+                <a href="https://github.com" target="_blank" class="nav-link-btn" title="View GitHub Source">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                    </svg>
+                    <span>Repository</span>
+                </a>
+                <span class="status-indicator" title="Engine Status">
+                    <span class="status-dot"></span> Pipeline Ready
+                </span>
+            </div>
+        </header>
+
+        <!-- Main Workspace -->
+        <main class="main-content">
+            <!-- Alert / Error Banner -->
+            {% if error %}
+            <div class="alert alert-error">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                <span>{{ error }}</span>
+            </div>
+            {% endif %}
+
+            <!-- Input Card -->
+            <section class="card input-card">
+                <div class="card-header">
+                    <div class="card-title-group">
+                        <span class="section-num">01</span>
+                        <div>
+                            <h2>Source Text Input</h2>
+                            <p class="section-desc">Paste articles, customer reviews, speeches, or load curated presets.</p>
+                        </div>
+                    </div>
+                    <!-- Sample Presets Dropdown / Buttons -->
+                    {% if samples %}
+                    <div class="presets-toolbar">
+                        <span class="presets-label">Quick Presets:</span>
+                        <div class="preset-chips">
+                            {% for sample in samples %}
+                            <button type="button" class="preset-btn" data-text="{{ sample.text }}" title="Load: {{ sample.title }}">
+                                {{ sample.title }}
+                            </button>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <form method="POST" action="/analyze" id="analyzeForm">
+                    <div class="textarea-wrapper">
+                        <textarea name="raw_text" id="rawTextInput" placeholder="Enter or paste text here (minimum a few sentences for rich analysis)..." rows="6" required>{% if results %}{{ results.original_text }}{% endif %}</textarea>
+                        <div class="textarea-footer">
+                            <div class="char-counter">
+                                <span id="wordCounter">0</span> words &bull; <span id="charCounter">0</span> chars
+                            </div>
+                            <button type="button" id="clearTextBtn" class="btn-ghost" title="Clear text">Clear</button>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary" id="submitBtn">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                            <span>Run Intelligence Pipeline</span>
+                        </button>
+                        {% if results %}
+                        <button type="submit" formaction="/download_pdf" class="btn btn-secondary" id="downloadPdfBtn" title="Export Academic PDF Report">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                            <span>Download Executive PDF</span>
+                        </button>
+                        {% endif %}
+                    </div>
+                </form>
+            </section>
+
+            <!-- Results Section -->
+            {% if results %}
+            <section class="results-section">
+                <!-- Section Header -->
+                <div class="results-header">
+                    <div class="card-title-group">
+                        <span class="section-num">02</span>
+                        <div>
+                            <h2>Analytics & Prediction Results</h2>
+                            <p class="section-desc">Computed across supervised ML classifiers, statistical TF-IDF engines, and spaCy NER.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- KPI Metric Grid -->
+                <div class="metrics-grid">
+                    <!-- Metric 1: Topic Category -->
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <span class="metric-label">Topic Category</span>
+                            <span class="metric-badge cat-badge">{{ results.category }}</span>
+                        </div>
+                        <div class="metric-value">{{ results.category }}</div>
+                        <div class="metric-sub">
+                            <span>Confidence: <b>{{ results.category_confidence }}%</b></span>
+                            <div class="progress-bar">
+                                <div class="progress-fill fill-category" style="width: {{ results.category_confidence }}%;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Metric 2: Sentiment Polarity -->
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <span class="metric-label">Sentiment Polarity</span>
+                            <span class="metric-badge {% if results.sentiment|lower == 'positive' %}badge-pos{% elif results.sentiment|lower == 'negative' %}badge-neg{% else %}badge-neutral{% endif %}">
+                                {{ results.sentiment }}
+                            </span>
+                        </div>
+                        <div class="metric-value">{{ results.sentiment }}</div>
+                        <div class="metric-sub">
+                            <span>Confidence: <b>{{ results.sentiment_confidence }}%</b></span>
+                            <div class="progress-bar">
+                                <div class="progress-fill {% if results.sentiment|lower == 'positive' %}fill-pos{% elif results.sentiment|lower == 'negative' %}fill-neg{% else %}fill-neutral{% endif %}" style="width: {{ results.sentiment_confidence }}%;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Metric 3: Document Length & Density -->
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <span class="metric-label">Document Volume</span>
+                            <span class="metric-icon">📊</span>
+                        </div>
+                        <div class="metric-value">{{ results.stats.word_count }} <span class="metric-unit">words</span></div>
+                        <div class="metric-sub">
+                            <span>{{ results.stats.sentence_count }} sentences &bull; {{ results.stats.lexical_diversity }}% lexical richness</span>
+                        </div>
+                    </div>
+
+                    <!-- Metric 4: Estimated Reading Time -->
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <span class="metric-label">Estimated Reading Time</span>
+                            <span class="metric-icon">⏱️</span>
+                        </div>
+                        <div class="metric-value">{{ results.stats.reading_time_sec }} <span class="metric-unit">sec</span></div>
+                        <div class="metric-sub">
+                            <span>Standard reading pace (~200 WPM)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2-Column Detailed Analytics -->
+                <div class="details-grid">
+                    <!-- Left Column: Summary & Keywords -->
+                    <div class="details-col">
+                        <!-- AI Extractive Summary Card -->
+                        <div class="card summary-card">
+                            <div class="card-inner-header">
+                                <div class="card-subtitle">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                                    <h3>Extractive Text Summary</h3>
+                                </div>
+                                <button type="button" class="btn-copy" id="copySummaryBtn" data-copy="{{ results.summary }}" title="Copy summary">
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                    <span>Copy</span>
+                                </button>
+                            </div>
+                            <blockquote class="summary-quote">
+                                {{ results.summary }}
+                            </blockquote>
+                            <p class="summary-footnote">Ranked top sentences by TF-IDF unigram and bigram information weight.</p>
+                        </div>
+
+                        <!-- Statistical Keywords Card -->
+                        <div class="card keywords-card">
+                            <div class="card-inner-header">
+                                <div class="card-subtitle">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
+                                    <h3>Salient Keyphrases (TF-IDF)</h3>
+                                </div>
+                            </div>
+                            <div class="chips-container">
+                                {% if results.keywords %}
+                                    {% for kw in results.keywords %}
+                                    <span class="kw-chip">{{ kw }}</span>
+                                    {% endfor %}
+                                {% else %}
+                                    <p class="text-muted">No distinctive keyphrases found.</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column: NER Entities & Class Probabilities -->
+                    <div class="details-col">
+                        <!-- Named Entities Card -->
+                        <div class="card ner-card">
+                            <div class="card-inner-header">
+                                <div class="card-subtitle">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                                    <h3>Named Entity Recognition (spaCy)</h3>
+                                </div>
+                            </div>
+
+                            {% set total_entities = results.entities.values() | map('length') | sum %}
+                            <div class="ner-groups">
+                                {% if total_entities > 0 %}
+                                    {% for cat, items in results.entities.items() %}
+                                        {% if items %}
+                                            <div class="ner-group">
+                                                <div class="ner-group-title">
+                                                    <span class="ner-tag-badge">{{ cat }}</span>
+                                                    <span class="ner-count">{{ items|length }} found</span>
+                                                </div>
+                                                <div class="ner-pills">
+                                                    {% for item in items %}
+                                                    <span class="ner-pill">{{ item }}</span>
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                        {% endif %}
+                                    {% endfor %}
+                                {% else %}
+                                    <p class="text-muted" style="padding: 12px 0;">No named entities detected in the text.</p>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Class Probabilities Breakdown -->
+                        {% if results.category_details and results.category_details.probabilities %}
+                        <div class="card probs-card">
+                            <div class="card-inner-header">
+                                <div class="card-subtitle">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+                                    <h3>Topic Probability Distribution</h3>
+                                </div>
+                            </div>
+                            <div class="probs-list">
+                                {% for cat_name, prob in results.category_details.probabilities.items() %}
+                                <div class="prob-row">
+                                    <div class="prob-label">
+                                        <span>{{ cat_name }}</span>
+                                        <span><b>{{ prob }}%</b></span>
+                                    </div>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill fill-category" style="width: {{ prob }}%;"></div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </section>
+            {% endif %}
+        </main>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <p>NLP Text Intelligence Studio &bull; Logistic Regression + TF-IDF + spaCy NER + ReportLab</p>
+        </footer>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

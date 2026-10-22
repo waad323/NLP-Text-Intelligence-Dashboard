@@ -1,0 +1,38 @@
+[
+  {
+    "id": "tech_ai",
+    "title": "Tech & AI Infrastructure",
+    "category_hint": "Tech",
+    "text": "OpenAI and Microsoft announced a massive multi-billion-dollar expansion of their artificial intelligence computing cluster in Redmond, Washington. Chief Executive Satya Nadella emphasized that modern high-performance GPU architectures are revolutionizing natural language understanding and machine learning reasoning at unprecedented scales. The new system integrates custom silicon designed to optimize large language model inference, reducing carbon footprints while drastically increasing tokens processed per watt. Tech industry analysts expect the development to accelerate enterprise automation across software engineering and cloud operations."
+  },
+  {
+    "id": "business_market",
+    "title": "Corporate Earnings Report",
+    "category_hint": "Business",
+    "text": "Quarterly earnings at multinational conglomerate Alphabet surged 34% year-over-year to $23.6 billion, buoyed by robust digital advertising demand and expanding cloud enterprise margins. Chief Financial Officer Ruth Porat stated during the investor call in New York that cost discipline combined with strategic investments in datacenter infrastructure yielded record operating income. Global equity markets responded enthusiastically to the figures, lifting major Wall Street indices to record intraday highs as institutional investors renewed confidence in tech sector resilience."
+  },
+  {
+    "id": "sports_football",
+    "title": "Premier League Match Report",
+    "category_hint": "Sport",
+    "text": "Manchester City staged a stunning second-half comeback to defeat Arsenal 3-1 at the Etihad Stadium, reclaiming top spot in the Premier League title race. Erling Haaland scored twice inside ten minutes following pinpoint crosses from Kevin De Bruyne, showcasing clinical finishing against a resolute defense. Manager Pep Guardiola praised his squad's tactical discipline and resilience under pressure, noting that high-intensity pressing in midfield proved decisive in neutralizing Arsenal's counter-attacking threats during critical closing stages."
+  },
+  {
+    "id": "politics_summit",
+    "title": "Diplomatic Global Summit",
+    "category_hint": "Politics",
+    "text": "European Union leaders gathered in Brussels for an emergency diplomatic summit aimed at ratifying new bilateral trade accords and environmental defense protocols. French President Emmanuel Macron and German Chancellor Olaf Scholz reiterated their shared commitment to multilateral diplomacy and border security coordination. Negotiators spent over sixteen hours drafting parliamentary amendments to address fiscal sovereignty concerns raised by smaller member states before reaching a unanimous consensus on the legislative framework."
+  },
+  {
+    "id": "film_review_pos",
+    "title": "Acclaimed Film Critique",
+    "category_hint": "Entertainment / Positive Review",
+    "text": "Christopher Nolan's cinematic masterpiece delivers an unforgettable audiovisual experience that captivates audiences from the opening sequence to the final frame. The cinematography is breathtaking, complemented by Ludwig Goransson's pulse-pounding orchestral score and Cillian Murphy's career-defining performance. The intricate storytelling seamlessly balances emotional depth with intellectual tension, making it an undeniable triumph of modern filmmaking that deserves every award it receives."
+  },
+  {
+    "id": "film_review_neg",
+    "title": "Disappointing Sequel Critique",
+    "category_hint": "Entertainment / Negative Review",
+    "text": "Despite a star-studded cast and an extravagant budget, the latest superhero sequel is a chaotic, hollow disappointment. The script is riddled with predictable cliches, jarring tonal shifts, and cringe-worthy dialogue that insults the audience's intelligence. Shallow computer-generated visual effects fail to mask the complete absence of narrative coherence or genuine character development, leaving viewers thoroughly exhausted and unimpressed."
+  }
+]
